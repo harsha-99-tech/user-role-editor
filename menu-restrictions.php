@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Menu Restrictions
- * Description: Restrict WordPress admin menus for the CSR role. Only show: My Plugin, CSR Panel, WooCommerce, Products, and Reviews.
+ * Plugin Name: Role-Based Menu Restrictions
+ * Description: Restrict WordPress admin menus for a specific user role. Only show selected menus.
  * Author: Your Name
  * Version: 1.0.0
  *
@@ -16,8 +16,14 @@ if ( ! is_admin() ) {
 add_action('admin_menu', function() {
     $user = wp_get_current_user();
 
-    // Only apply restrictions if user has the CSR role
-    if ( ! in_array('csr', $user->roles, true) && ! in_array('CSR', $user->roles, true) ) {
+    /**
+     * 🔧 Customize the role name here.
+     * Example: 'csr', 'editor', 'shop_manager', etc.
+     */
+    $restricted_role = 'your_role_slug_here';
+
+    // Only apply restrictions if the current user has the restricted role
+    if ( ! in_array( $restricted_role, $user->roles, true ) ) {
         return;
     }
 
@@ -25,44 +31,46 @@ add_action('admin_menu', function() {
 
     /**
      * 🚨 Step 1: Remove everything
-     * Clear out the global $menu and $submenu arrays so no default/admin menus appear.
+     * Clears all default and plugin menus.
      */
     $menu    = [];
     $submenu = [];
 
     /**
-     * ✅ Step 2: Add back ONLY what CSR should see
+     * ✅ Step 2: Add back ONLY what this role should see
+     * Adjust/add/remove these menu items as needed.
      */
 
-    // 1. My Plugin
+    // Example 1: Custom plugin page
     add_menu_page(
-        'My Plugin',                                // Page title
-        'My Plugin',                                // Menu title
-        'read',                                     // Capability
-        'wordpress-plugin-boilerplate',             // Slug
-        '',                                         // Callback (not needed, handled by plugin)
-        'dashicons-admin-generic',                  // Icon
-        2                                           // Position
+        'My Plugin',                 // Page title
+        'My Plugin',                 // Menu title
+        'read',                      // Capability
+        'my-plugin-slug',            // Menu slug (change to your plugin’s slug)
+        '',                          // Callback (not needed if handled by plugin)
+        'dashicons-admin-generic',   // Icon
+        2                            // Position
     );
 
-    // 2. CSR Panel
+    // Example 2: Another custom panel
     add_menu_page(
-        'CSR Panel',
-        'CSR Panel',
+        'Custom Panel',
+        'Custom Panel',
         'read',
-        'mdz-lightSpeed-sync',
-        '',                                         // The plugin handles content
+        'custom-panel-slug',         // Replace with your plugin/feature slug
+        '',
         'dashicons-dashboard',
         3
     );
 
-    // 3. WooCommerce (redirect to wc-admin)
+    // Example 3: WooCommerce
     add_menu_page(
         'WooCommerce',
         'WooCommerce',
         'read',
         'woocommerce',
         function() {
+            // Redirect to WooCommerce dashboard
             echo '<script>window.location.href="' . admin_url('admin.php?page=wc-admin') . '";</script>';
             exit;
         },
@@ -70,7 +78,7 @@ add_action('admin_menu', function() {
         4
     );
 
-    // 4. Products
+    // Example 4: Products
     add_menu_page(
         'Products',
         'Products',
@@ -81,12 +89,12 @@ add_action('admin_menu', function() {
         5
     );
 
-    // 5. Reviews (redirect to product reviews)
+    // Example 5: Reviews
     add_menu_page(
         'Product Reviews',
         'Reviews',
         'read',
-        'product-reviews-csr',
+        'product-reviews-slug',      // Custom slug (redirect used below)
         function() {
             echo '<script>window.location.href="' . admin_url('edit-comments.php?post_type=product') . '";</script>';
             exit;
@@ -98,11 +106,14 @@ add_action('admin_menu', function() {
 
 /**
  * 🔧 Step 3: Clean up the admin bar
- * Remove unnecessary nodes from the top bar for CSR users.
+ * Remove unwanted top-bar items for the restricted role.
  */
 add_action('admin_bar_menu', function($wp_admin_bar) {
     $user = wp_get_current_user();
-    if ( in_array('csr', $user->roles, true) || in_array('CSR', $user->roles, true) ) {
+
+    $restricted_role = 'your_role_slug_here'; // <-- Customize this
+
+    if ( in_array( $restricted_role, $user->roles, true ) ) {
         $wp_admin_bar->remove_node('wp-logo');
         $wp_admin_bar->remove_node('comments');
         $wp_admin_bar->remove_node('new-content');
@@ -112,13 +123,15 @@ add_action('admin_bar_menu', function($wp_admin_bar) {
 }, 999);
 
 /**
- * 🔄 Step 4: Redirect CSR after login
- * Automatically send CSR users to the CSR Panel dashboard.
+ * 🔄 Step 4: Redirect restricted role after login
+ * Change the redirect page slug as needed.
  */
 add_filter('login_redirect', function($redirect_to, $request, $user) {
+    $restricted_role = 'your_role_slug_here'; // <-- Customize this
+
     if ( isset($user->roles) && is_array($user->roles) ) {
-        if ( in_array('csr', $user->roles, true) || in_array('CSR', $user->roles, true) ) {
-            return admin_url('admin.php?page=mdz-lightSpeed-sync#/dashboard');
+        if ( in_array( $restricted_role, $user->roles, true ) ) {
+            return admin_url('admin.php?page=custom-panel-slug#/dashboard'); // <-- Customize destination
         }
     }
     return $redirect_to;

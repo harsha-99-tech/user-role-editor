@@ -1,50 +1,44 @@
-# CSR Menu Restrictions
+# Role-Based Menu Restrictions
 
-A **WordPress Must-Use plugin (MU plugin)** that restricts the WordPress admin menu for the **CSR role**.  
-It removes all default and plugin menus, then adds back only the following:
-
-- **My Plugin** (`wordpress-plugin-boilerplate`)
-- **CSR Panel** (`mdz-lightSpeed-sync`)
-- **WooCommerce**
-- **Products**
-- **Reviews** (redirects to product reviews)
+A **WordPress Must-Use plugin (MU plugin)** that restricts the WordPress admin menu for a specific user role.  
+It removes all default menus, then adds back only the ones you define.
 
 ---
 
 ## 📦 Installation
 
 1. Clone or download this repository.
-2. Copy the file `menu-restrictions.php` into your WordPress site at: wp-content/mu-plugins/csr-menu-restrictions.php
+2. Copy the file `role-based-menu-restrictions.php` into: wp-content/mu-plugins/role-based-menu-restrictions.php
 
 > If the `mu-plugins` folder doesn’t exist, create it.
 
-3. That’s it! MU plugins load automatically and cannot be disabled from the admin dashboard.
+3. Edit the file and replace:
+
+- `your_role_slug_here` → your role (e.g., `csr`, `editor`, `shop_manager`).
+- `my-plugin-slug`, `custom-panel-slug`, etc. → the actual slugs of your plugins or pages.
+- Update icons, positions, and titles as needed.
+
+4. Done! The plugin activates automatically and can’t be disabled via the dashboard.
 
 ---
 
 ## 🎯 Features
 
-- Ensures CSR role only sees **approved menus**.
-- Hides all other admin menus and submenus.
-- Cleans up the admin bar (removes logo, updates, comments, etc.).
-- Redirects CSR users to the **CSR Panel dashboard** after login.
+- Restrict menus for one specific role.
+- Clean admin area: remove all menus, then add only chosen ones.
+- Hide unwanted items from the admin bar.
+- Redirects restricted role to a custom dashboard after login.
 
 ---
 
-## 🔑 Requirements
+## 🔧 Customization Points
 
-- WordPress 5.0+
-- A role named `csr` (or `CSR`) must exist in your site.
-
----
-
-## ⚠️ Notes
-
-- This plugin is meant for **CSR role only**.
-- It does **not** change permissions — only the **menu visibility**. Use a role manager plugin (e.g., User Role Editor) if you need to modify CSR role capabilities.
+- **Role Name** → update `$restricted_role`.
+- **Menu Items** → adjust/add `add_menu_page()` calls.
+- **Login Redirect** → update the destination page slug.
 
 ---
 
 ## 📜 License
 
-MIT License – feel free to use and modify.
+MIT License – free to use and modify.
